@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {useAuth} from "../../context/AuthContext";
+import { Link } from "react-router-dom";
 const LoginPage = () => {
     const [formData, setFormData] = useState({
         email: "",
@@ -78,6 +79,9 @@ const LoginPage = () => {
                     </div>
                 </div>
             </form>
+            <p className="pt-2 text-sm text-gray-500 border-t border-gray-100">
+                Don't have an account? <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">Sign up</Link>
+            </p>
             </div>
         </div>
     );
