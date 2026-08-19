@@ -127,7 +127,7 @@ const RegisterPage = () => {
                         {submitting ? 'Signing up...' : 'Sign Up'}
                     </button>
                 </form>
-                <p>
+                <p className="text-sm text-gray-500 border-t border-gray-100">
                     Already have an account? <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">Login</Link>
                 </p>
             </div>
