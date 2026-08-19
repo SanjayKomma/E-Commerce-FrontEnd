@@ -1,13 +1,15 @@
-import { RouterProvider } from "react-router-dom";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import { HomePage } from "./views/Home/HomePage";
-import LoginPage from "./views/login/LoginPage";
 import RootLayout from "./layouts/RootLayout";
+import HomePage from "./views/Home/HomePage";
+import LoginPage from "./views/login/LoginPage";
 import RegisterPage from "./views/login/RegisterPage";
+import ProfilePage from "./views/profile/ProfilePage";
+import ProtectedRoute from "./common/ProtectedRoute";
+
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <RootLayout />,
     children: [
       {
@@ -15,19 +17,27 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: 'login',
-        element : <LoginPage />,
+        path: "login",
+        element: <LoginPage />,
       },
       {
-        path: 'register',
-        element : <RegisterPage />,
-      }
+        path: "register",
+        element: <RegisterPage />,
+      },
+      {
+        path: "profile",
+        element: <ProtectedRoute><ProfilePage /></ProtectedRoute>,
+      },
     ],
   },
 ]);
+
 const App = () => {
   return (
-    <RouterProvider router={router} />
-  )
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 };
+
 export default App;
