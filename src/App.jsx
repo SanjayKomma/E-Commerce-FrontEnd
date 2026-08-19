@@ -1,12 +1,28 @@
-import { BrowserRouter } from "react-router-dom";
-import LoginPage from "./views/LoginPage";
+import { RouterProvider } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import { StrictMode } from "react";
+import { HomePage } from "./views/Home/HomePage";
+import LoginPage from "./views/login/LoginPage";
+import RootLayout from "./layouts/RootLayout";
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootLayout />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: 'login',
+        element : <LoginPage />,
+      },
+    ],
+  },
+]);
 const App = () => {
   return (
-    <StrictMode>
-      <App />
-    </StrictMode>
-  );
+    <RouterProvider router={router} />
+  )
 };
 export default App;

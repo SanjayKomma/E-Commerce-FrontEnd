@@ -1,10 +1,10 @@
-const config = require('../utils/config')
-const axios = require('axios')
+import axios from 'axios';
+import config from '../utils/config';
 const api = axios.create({
-    baseURL : `${process.env.VITE_API_BASE_URL}`,
+    baseURL : config.apiUrl,
+    withCredentials : true,
     headers : {
         'Content-Type' : 'application/json'
     },
-    withCredentials : true
 });
-module.exports = api
+export default api;

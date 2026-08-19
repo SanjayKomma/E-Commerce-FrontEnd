@@ -1,4 +1,4 @@
-const api = require('./api');
+import api from './api';
 const authService = {
     login : async(credentials) => {
         const response = await api.post('/auth/login',credentials);
@@ -17,4 +17,4 @@ const authService = {
         return response.data;
     }
 }
-module.exports = authService;
+export default authService;
