@@ -6,6 +6,7 @@ import LoginPage from "./views/login/LoginPage";
 import RegisterPage from "./views/login/RegisterPage";
 import ProfilePage from "./views/profile/ProfilePage";
 import ProtectedRoute from "./common/ProtectedRoute";
+import ProductPage from "./components/products/ProductCard";
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
         path: "profile",
         element: <ProtectedRoute><ProfilePage /></ProtectedRoute>,
       },
+      {
+        path: "products",
+        element:<ProductPage />
+      }
     ],
   },
 ]);
