@@ -2,8 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
-  console.log(user);
+  const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -32,14 +31,20 @@ const Navbar = () => {
 
           {/* Right Action Items */}
           <div className="flex items-center space-x-4">
-            {user ? (
+            {loading ? (
+              /* Skeleton placeholder while checking session to prevent flicker */
+              <div className="h-8 w-24 bg-gray-100 animate-pulse rounded-lg" />
+            ) : user ? (
               <div className="flex items-center space-x-4">
-                <span className="text-sm font-medium text-gray-700">
-                  Hi, {user.user.name?.split(" ")[0]}
-                </span>
+                <Link
+                  to="/profile"
+                  className="text-sm font-medium text-gray-700 hover:text-indigo-600 transition"
+                >
+                  Hi, {user?.name?.split(" ")[0] || "User"}
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-xs font-semibold text-gray-600 hover:text-red-600 px-3 py-1.5 rounded-lg border border-gray-200 hover:border-red-200 transition cursor-pointer"
+                  className="text-xs font-semibold text-gray-600 hover:text-red-600 cursor-pointer"
                 >
                   Logout
                 </button>
@@ -48,13 +53,13 @@ const Navbar = () => {
               <div className="flex items-center space-x-3">
                 <Link
                   to="/login"
-                  className="text-sm font-medium text-gray-700 hover:text-indigo-600 px-3 py-2 transition"
+                  className="text-sm font-medium text-gray-700 hover:text-indigo-600 transition px-3 py-1.5"
                 >
                   Log in
                 </Link>
                 <Link
                   to="/register"
-                  className="text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl shadow transition"
+                  className="px-3.5 py-1.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition shadow-sm"
                 >
                   Sign up
                 </Link>

@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
         try{
             const data = await authService.getProfile();
-            setUser(data);
+            setUser(data.user);
         }
         catch(error){
             setUser(null);
@@ -18,9 +18,10 @@ export const AuthProvider = ({ children }) => {
         checkAuth();
     }, []);
     const login = async (credentials) => {
-        const data = await authService.login(credentials);
-        setUser(user);
-    };
+    await authService.login(credentials);
+    const profile = await authService.getProfile();
+    setUser(profile.user || profile);
+  };
     const register = async (userData) => {
         const data = await authService.register(userData);
         setUser(data);
