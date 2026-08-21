@@ -1,3 +1,4 @@
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -10,6 +11,15 @@ const Navbar = () => {
     navigate("/login");
   };
 
+  const getInitials = (name = "") => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,32 +29,30 @@ const Navbar = () => {
             E-Commerce
           </Link>
 
-          {/* Center Navigation Links */}
-          <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
-            <Link to="/" className="hover:text-indigo-600 transition">
-              Products
-            </Link>
-            <Link to="/categories" className="hover:text-indigo-600 transition">
-              Categories
-            </Link>
-          </div>
-
           {/* Right Action Items */}
           <div className="flex items-center space-x-4">
             {loading ? (
-              /* Skeleton placeholder while checking session to prevent flicker */
-              <div className="h-8 w-24 bg-gray-100 animate-pulse rounded-lg" />
+              <div className="h-9 w-9 bg-gray-100 animate-pulse rounded-full" />
             ) : user ? (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
+                {/* Profile Icon / Avatar */}
                 <Link
                   to="/profile"
-                  className="text-sm font-medium text-gray-700 hover:text-indigo-600 transition"
+                  title="View & Edit Profile"
+                  className="flex items-center gap-2 p-1.5 rounded-full hover:bg-gray-100 transition"
                 >
-                  Hi, {user?.name?.split(" ")[0] || "User"}
+                  <div className="h-9 w-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                    {getInitials(user?.name || "U")}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700 hidden sm:inline-block pr-1">
+                    {user?.name?.split(" ")[0]}
+                  </span>
                 </Link>
+
+                {/* Logout Button */}
                 <button
                   onClick={handleLogout}
-                  className="text-xs font-semibold text-gray-600 hover:text-red-600 cursor-pointer"
+                  className="text-xs font-semibold text-gray-500 hover:text-red-600 px-2 py-1 rounded transition cursor-pointer"
                 >
                   Logout
                 </button>

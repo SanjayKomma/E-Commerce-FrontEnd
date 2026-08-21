@@ -30,6 +30,12 @@ export const AuthProvider = ({ children }) => {
         const data = await authService.logout();
         setUser(null);
     };
+    const updateProfile = async (userData) => {
+        const data = await authService.updateProfile(userData);
+        const updatedUser = data.user || data;
+        setUser(updatedUser);
+        return updatedUser;
+    }
     return(
         <AuthContext.Provider value={{
             user,
@@ -37,7 +43,8 @@ export const AuthProvider = ({ children }) => {
             login,
             register,
             logout,
-            checkAuth
+            checkAuth,
+            updateProfile
         }}>
             {children}
         </AuthContext.Provider>
