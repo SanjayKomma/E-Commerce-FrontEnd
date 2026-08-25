@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import ProductCard from "../../components/products/ProductCard";  
 import axios from "axios";
 import api from "../../services/api";
+import { useCart } from "../../context/CartContext";
 const HomePage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const { addToCart } = useCart();
 
   const categories = ["All", "Electronics", "Clothing", "Home & Kitchen", "Accessories"];
 
@@ -30,7 +32,7 @@ const HomePage = () => {
   }, []);
 
   const handleAddToCart = (product) => {
-    console.log("Adding to cart:", product);
+    addToCart(product);
   };
 
   // Filter products by search and category

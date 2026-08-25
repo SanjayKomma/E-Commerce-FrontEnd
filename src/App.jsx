@@ -8,6 +8,7 @@ import ProfilePage from "./views/profile/ProfilePage";
 import ProtectedRoute from "./common/ProtectedRoute";
 import ProductPage from "./components/products/ProductCard";
 import { CartProvider } from "./context/CartContext";
+import CartPage from "./views/cart/CartPage";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: "products",
         element:<ProductPage />
+      },
+      {
+        path: "cart",
+        element:<CartPage />
       }
     ],
   },
