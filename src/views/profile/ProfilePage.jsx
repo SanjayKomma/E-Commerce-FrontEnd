@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import authService from "../../services/authService";
 
 const ProfilePage = () => {
   const { user, updateProfile, logout } = useAuth();
 
+  // Profile Details State
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -11,9 +13,20 @@ const ProfilePage = () => {
     phone: "",
     address: [],
   });
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState({ type: "", message: "" });
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileStatus, setProfileStatus] = useState({ type: "", message: "" });
 
+  // Change Password State
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordStatus, setPasswordStatus] = useState({ type: "", message: "" });
+
+  // Initialize form data when user state updates
   useEffect(() => {
     if (user) {
       setFormData({
@@ -22,21 +35,18 @@ const ProfilePage = () => {
         phone: user.phone || "",
         address: user.address?.length
           ? user.address
-          : [
-              {
-                street: "",
-                city: "",
-                ZipCode: "",
-                country: "",
-                isDefault: true,
-              },
-            ],
+          : [{ street: "", city: "", ZipCode: "", country: "", isDefault: true }],
       });
     }
   }, [user]);
 
-  const handleChange = (e) => {
+  // Input Handlers
+  const handleProfileChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handlePasswordChangeInput = (e) => {
+    setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
   };
 
   const handleAddressChange = (index, field, value) => {
@@ -71,23 +81,68 @@ const ProfilePage = () => {
     setFormData({ ...formData, address: filtered });
   };
 
-  const handleSubmit = async (e) => {
+  // Submit Profile Information
+  const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setStatus({ type: "", message: "" });
+    setProfileLoading(true);
+    setProfileStatus({ type: "", message: "" });
 
     try {
       await updateProfile(formData);
-      setStatus({ type: "success", message: "Profile updated successfully!" });
+      setProfileStatus({ type: "success", message: "Profile updated successfully!" });
       setIsEditing(false);
     } catch (err) {
       console.error(err);
-      setStatus({
+      setProfileStatus({
         type: "error",
         message: err.response?.data?.message || "Failed to update profile",
       });
     } finally {
-      setLoading(false);
+      setProfileLoading(false);
+    }
+  };
+
+  // Submit Password Change
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setPasswordStatus({ type: "", message: "" });
+
+    if (passwordData.newPassword.length < 6) {
+      setPasswordStatus({
+        type: "error",
+        message: "New password must be at least 6 characters long.",
+      });
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordStatus({
+        type: "error",
+        message: "New password and confirmation do not match.",
+      });
+      return;
+    }
+
+    try {
+      setPasswordLoading(true);
+      const res = await authService.changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+
+      setPasswordStatus({
+        type: "success",
+        message: res.message || "Password updated successfully!",
+      });
+      setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      setShowPasswordForm(false);
+    } catch (err) {
+      setPasswordStatus({
+        type: "error",
+        message: err.response?.data?.message || "Failed to update password.",
+      });
+    } finally {
+      setPasswordLoading(false);
     }
   };
 
@@ -111,7 +166,7 @@ const ProfilePage = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
-      {/* Top Banner Card */}
+      {/* 1. Profile Header Banner */}
       <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-5">
@@ -168,29 +223,28 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Status Alert */}
-      {status.message && (
+      {/* Profile Status Notification */}
+      {profileStatus.message && (
         <div
           className={`p-4 rounded-xl text-sm font-medium ${
-            status.type === "success"
+            profileStatus.type === "success"
               ? "bg-green-50 text-green-700 border border-green-200"
               : "bg-red-50 text-red-700 border border-red-200"
           }`}
         >
-          {status.message}
+          {profileStatus.message}
         </div>
       )}
 
-      {/* Main Details Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Account Details Section */}
+      {/* 2. Personal Information & Address Form */}
+      <form onSubmit={handleProfileSubmit} className="space-y-6">
+        {/* Personal Details */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
           <h2 className="text-lg font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">
             Personal Information
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {/* Full Name */}
             <div>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
                 Full Name
@@ -200,7 +254,7 @@ const ProfilePage = () => {
                   type="text"
                   name="name"
                   value={formData.name}
-                  onChange={handleChange}
+                  onChange={handleProfileChange}
                   required
                   className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
                 />
@@ -211,7 +265,6 @@ const ProfilePage = () => {
               )}
             </div>
 
-            {/* Email Address */}
             <div>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
                 Email Address
@@ -221,7 +274,7 @@ const ProfilePage = () => {
                   type="email"
                   name="email"
                   value={formData.email}
-                  onChange={handleChange}
+                  onChange={handleProfileChange}
                   required
                   className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
                 />
@@ -232,7 +285,6 @@ const ProfilePage = () => {
               )}
             </div>
 
-            {/* Phone Number */}
             <div>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
                 Phone Number
@@ -243,7 +295,7 @@ const ProfilePage = () => {
                   name="phone"
                   placeholder="+91 9876543210"
                   value={formData.phone}
-                  onChange={handleChange}
+                  onChange={handleProfileChange}
                   className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
                 />
               ) : (
@@ -253,7 +305,6 @@ const ProfilePage = () => {
               )}
             </div>
 
-            {/* Role (Read-only) */}
             <div>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
                 Account Role
@@ -265,25 +316,24 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Addresses Section */}
+        {/* Addresses */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
           <div className="flex items-center justify-between mb-6 pb-2 border-b border-gray-100">
             <div>
               <h2 className="text-lg font-bold text-gray-900">Saved Addresses</h2>
-              <p className="text-xs text-gray-500">Manage your shipping and billing destinations</p>
+              <p className="text-xs text-gray-500">Manage your shipping and delivery addresses</p>
             </div>
             {isEditing && (
               <button
                 type="button"
                 onClick={addAddressField}
-                className="px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition"
+                className="px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition cursor-pointer"
               >
                 + Add Address
               </button>
             )}
           </div>
 
-          {/* View Mode Addresses */}
           {!isEditing && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {user?.address?.length > 0 ? (
@@ -291,9 +341,7 @@ const ProfilePage = () => {
                   <div
                     key={addr._id || idx}
                     className={`p-4 rounded-xl border ${
-                      addr.isDefault
-                        ? "border-indigo-300 bg-indigo-50/30"
-                        : "border-gray-200 bg-white"
+                      addr.isDefault ? "border-indigo-300 bg-indigo-50/30" : "border-gray-200 bg-white"
                     } relative space-y-1`}
                   >
                     {addr.isDefault && (
@@ -301,7 +349,7 @@ const ProfilePage = () => {
                         Default Address
                       </span>
                     )}
-                    <p className="text-sm font-semibold text-gray-900">{addr.street || "No street"}</p>
+                    <p className="text-sm font-semibold text-gray-900">{addr.street || "No street specified"}</p>
                     <p className="text-xs text-gray-600">
                       {addr.city ? `${addr.city}, ` : ""}
                       {addr.ZipCode || ""}
@@ -317,14 +365,10 @@ const ProfilePage = () => {
             </div>
           )}
 
-          {/* Edit Mode Addresses */}
           {isEditing && (
             <div className="space-y-4">
               {formData.address.map((addr, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 rounded-xl border border-gray-200 bg-gray-50/50 relative space-y-3"
-                >
+                <div key={idx} className="p-4 rounded-xl border border-gray-200 bg-gray-50/50 relative space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-gray-700">Address #{idx + 1}</span>
                     <div className="flex items-center gap-3">
@@ -342,7 +386,7 @@ const ProfilePage = () => {
                         <button
                           type="button"
                           onClick={() => removeAddressField(idx)}
-                          className="text-xs font-semibold text-red-600 hover:text-red-700"
+                          className="text-xs font-semibold text-red-600 hover:text-red-700 cursor-pointer"
                         >
                           Remove
                         </button>
@@ -386,19 +430,119 @@ const ProfilePage = () => {
           )}
         </div>
 
-        {/* Submit Bar when Editing */}
         {isEditing && (
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="submit"
-              disabled={loading}
+              disabled={profileLoading}
               className="px-6 py-2.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow transition disabled:opacity-50 cursor-pointer"
             >
-              {loading ? "Saving Changes..." : "Save All Changes"}
+              {profileLoading ? "Saving Changes..." : "Save All Changes"}
             </button>
           </div>
         )}
       </form>
+
+      {/* 3. Security & Change Password Section */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
+        <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Security & Password</h2>
+            <p className="text-xs text-gray-500">Ensure your account uses a secure password</p>
+          </div>
+          {!showPasswordForm ? (
+            <button
+              type="button"
+              onClick={() => setShowPasswordForm(true)}
+              className="px-4 py-2 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition cursor-pointer"
+            >
+              Change Password
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setShowPasswordForm(false);
+                setPasswordStatus({ type: "", message: "" });
+              }}
+              className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition cursor-pointer"
+            >
+              Close
+            </button>
+          )}
+        </div>
+
+        {passwordStatus.message && (
+          <div
+            className={`mt-4 p-3 rounded-xl text-xs font-medium ${
+              passwordStatus.type === "success"
+                ? "bg-green-50 text-green-700 border border-green-200"
+                : "bg-red-50 text-red-700 border border-red-200"
+            }`}
+          >
+            {passwordStatus.message}
+          </div>
+        )}
+
+        {showPasswordForm && (
+          <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-4 max-w-md">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                Current Password
+              </label>
+              <input
+                type="password"
+                name="currentPassword"
+                placeholder="••••••••"
+                value={passwordData.currentPassword}
+                onChange={handlePasswordChangeInput}
+                required
+                className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                New Password
+              </label>
+              <input
+                type="password"
+                name="newPassword"
+                placeholder="••••••••"
+                value={passwordData.newPassword}
+                onChange={handlePasswordChangeInput}
+                required
+                className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="••••••••"
+                value={passwordData.confirmPassword}
+                onChange={handlePasswordChangeInput}
+                required
+                className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+              />
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                type="submit"
+                disabled={passwordLoading}
+                className="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow transition disabled:opacity-50 cursor-pointer"
+              >
+                {passwordLoading ? "Updating..." : "Update Password"}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 };
