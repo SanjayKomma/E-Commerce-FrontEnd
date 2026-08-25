@@ -1,8 +1,9 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
+import { useCart } from "../context/CartContext";
 const Navbar = () => {
+  const { totalItems} = useCart();
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -35,6 +36,30 @@ const Navbar = () => {
               <div className="h-9 w-9 bg-gray-100 animate-pulse rounded-full" />
             ) : user ? (
               <div className="flex items-center space-x-3">
+                <Link
+                  to="/cart"
+                  title="View Cart"
+                  className = "relative p-2 text-gray-700 hover:text-indigo-600 transition"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                    />
+                  </svg>
+                  {totalItems > 0 && (
+                    <span className="absolute top-1 right-1 bg-indigo-600 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+                      {totalItems}
+                    </span>
+                  )}
+                </Link>
                 {/* Profile Icon / Avatar */}
                 <Link
                   to="/profile"

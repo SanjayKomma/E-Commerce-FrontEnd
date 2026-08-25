@@ -7,6 +7,7 @@ import RegisterPage from "./views/login/RegisterPage";
 import ProfilePage from "./views/profile/ProfilePage";
 import ProtectedRoute from "./common/ProtectedRoute";
 import ProductPage from "./components/products/ProductCard";
+import { CartProvider } from "./context/CartContext";
 
 const router = createBrowserRouter([
   {
@@ -40,7 +41,9 @@ const router = createBrowserRouter([
 const App = () => {
   return (
     <AuthProvider>
-      <RouterProvider router={router} />
+      <CartProvider>
+        <RouterProvider router={router} />
+      </CartProvider>
     </AuthProvider>
   );
 };
