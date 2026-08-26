@@ -7,16 +7,15 @@ const ProductCard = ({ product, onAddToCart }) => {
 
   return (
     <div className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden">
-      
-      {/* 1. Large Top Hero Image */}
       <div className="relative aspect-square w-full bg-gray-50 overflow-hidden">
-        <img
-          src={product.image || "https://placehold.co/600x600?text=Product"}
-          alt={product.name}
-          className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
-        />
-
+        <Link to={`/products/${product._id || product.id}`}>
+          <img
+            src={product.image || "https://placehold.co/600x600?text=Product"}
+            alt={product.name}
+            className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+        </Link>
         {/* Category Chip */}
         {product.category && (
           <span className="absolute top-3 left-3 bg-white/95 backdrop-blur-md text-[11px] font-semibold tracking-wide text-gray-700 px-3 py-1 rounded-full shadow-sm">

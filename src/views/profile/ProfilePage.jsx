@@ -4,8 +4,6 @@ import authService from "../../services/authService";
 
 const ProfilePage = () => {
   const { user, updateProfile, logout } = useAuth();
-
-  // Profile Details State
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -15,8 +13,6 @@ const ProfilePage = () => {
   });
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileStatus, setProfileStatus] = useState({ type: "", message: "" });
-
-  // Change Password State
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -25,8 +21,6 @@ const ProfilePage = () => {
   });
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [passwordStatus, setPasswordStatus] = useState({ type: "", message: "" });
-
-  // Initialize form data when user state updates
   useEffect(() => {
     if (user) {
       setFormData({
@@ -39,8 +33,6 @@ const ProfilePage = () => {
       });
     }
   }, [user]);
-
-  // Input Handlers
   const handleProfileChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -80,8 +72,6 @@ const ProfilePage = () => {
     }
     setFormData({ ...formData, address: filtered });
   };
-
-  // Submit Profile Information
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     setProfileLoading(true);
@@ -101,8 +91,6 @@ const ProfilePage = () => {
       setProfileLoading(false);
     }
   };
-
-  // Submit Password Change
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setPasswordStatus({ type: "", message: "" });
@@ -126,7 +114,7 @@ const ProfilePage = () => {
     try {
       setPasswordLoading(true);
       const res = await authService.changePassword({
-        currentPassword: passwordData.currentPassword,
+        oldPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       });
 
@@ -166,7 +154,6 @@ const ProfilePage = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
-      {/* 1. Profile Header Banner */}
       <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-5">
@@ -222,8 +209,6 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
-
-      {/* Profile Status Notification */}
       {profileStatus.message && (
         <div
           className={`p-4 rounded-xl text-sm font-medium ${
@@ -235,10 +220,7 @@ const ProfilePage = () => {
           {profileStatus.message}
         </div>
       )}
-
-      {/* 2. Personal Information & Address Form */}
       <form onSubmit={handleProfileSubmit} className="space-y-6">
-        {/* Personal Details */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
           <h2 className="text-lg font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">
             Personal Information
@@ -315,8 +297,6 @@ const ProfilePage = () => {
             </div>
           </div>
         </div>
-
-        {/* Addresses */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
           <div className="flex items-center justify-between mb-6 pb-2 border-b border-gray-100">
             <div>
@@ -442,8 +422,6 @@ const ProfilePage = () => {
           </div>
         )}
       </form>
-
-      {/* 3. Security & Change Password Section */}
       <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
         <div className="flex items-center justify-between pb-2 border-b border-gray-100">
           <div>

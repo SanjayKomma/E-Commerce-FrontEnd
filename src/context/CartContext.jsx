@@ -30,8 +30,6 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     fetchCart();
   }, [user]);
-
-  // Safe Add To Cart
   const addToCart = async (productItem, quantity = 1) => {
     if (!productItem) return;
     const targetId = productItem._id || productItem.id;
@@ -42,7 +40,6 @@ export const CartProvider = ({ children }) => {
       if (updatedItems && Array.isArray(updatedItems)) {
         setCart(updatedItems);
       } else {
-        // Fallback optimistic update
         setCart((prev) => {
           const exists = prev.find(
             (i) => (i.product?._id || i.product || i._id) === targetId
@@ -61,46 +58,44 @@ export const CartProvider = ({ children }) => {
       console.error("Error adding to cart:", err);
     }
   };
-
-  // Safe Update Quantity
-  const updateQuantity = async (productId, qty) => {
-    if (qty <= 0) {
-      return removeFromCart(productId);
+const updateQuantity = async (productId, qty) => {
+  if (qty <= 0) {
+    return removeFromCart(productId);
+  }
+  const previousCart = [...cart];
+  setCart((prev) =>
+    prev.map((item) => {
+      const id = item.product?._id || item.product?.id || item.productId || item._id;
+      return id === productId ? { ...item, quantity: qty } : item;
+    })
+  );
+  try {
+    const res = await cartService.updateCartItem(productId, qty);
+    const updatedItems = res?.items || res?.cart?.items;
+    if (updatedItems && Array.isArray(updatedItems)) {
+      setCart(updatedItems);
     }
-    try {
-      const res = await cartService.updateCartItem(productId, qty);
-      const updatedItems = res?.items || res?.cart?.items;
-      if (updatedItems && Array.isArray(updatedItems)) {
-        setCart(updatedItems);
-      } else {
-        setCart((prev) =>
-          prev.map((item) => {
-            const currentId = item.product?._id || item.product || item._id;
-            return currentId === productId ? { ...item, quantity: qty } : item;
-          })
-        );
-      }
-    } catch (err) {
-      console.error("Error updating quantity:", err);
-    }
-  };
-
-  // Safe Remove Item
-  const removeFromCart = async (productId) => {
-    try {
-      await cartService.removeFromCart(productId);
-      setCart((prev) =>
-        prev.filter((item) => (item.product?._id || item.product || item._id) !== productId)
-      );
-    } catch (err) {
-      console.error("Error removing item:", err);
-    }
-  };
-
-
-  // Safe Calculations (guarantees numbers, never NaN / undefined)
+  } catch (err) {
+    console.error("Failed to update cart quantity on server, reverting:", err);
+    setCart(previousCart);
+  }
+};
+const removeFromCart = async (productId) => {
+  const previousCart = [...cart];
+  setCart((prev) =>
+    prev.filter((item) => {
+      const id = item.product?._id || item.product?.id || item.productId || item._id;
+      return id !== productId;
+    })
+  );
+  try {
+    await cartService.removeFromCart(productId);
+  } catch (err) {
+    console.error("Failed to remove item on server, reverting:", err);
+    setCart(previousCart);
+  }
+};
   const totalItems = (cart || []).reduce((sum, item) => sum + (Number(item?.quantity) || 1), 0);
-
   const subtotal = (cart || []).reduce((sum, item) => {
     const rawPrice = item?.product?.price ?? item?.price ?? 0;
     const price = Number(rawPrice) || 0;

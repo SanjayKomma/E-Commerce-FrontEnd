@@ -1,4 +1,4 @@
-const api = require('./api');
+import api from './api';
 const productService = {
     getAllProducts : async() => {
         const response = await api.get('/products');
@@ -13,4 +13,4 @@ const productService = {
         return response.data;
     }
 }
-module.exports = productService;
+export default productService;
