@@ -47,7 +47,6 @@ const CartPage = () => {
       </div>
     );
   }
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
@@ -56,17 +55,13 @@ const CartPage = () => {
           <p className="text-xs text-gray-500 mt-1">Review your selected items before checkout</p>
         </div>
       </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Product Items List */}
         <div className="lg:col-span-8 space-y-4">
           {cart.map((item, idx) => {
-            // Normalize populated product object vs flat object
             const prod = typeof item.product === "object" && item.product !== null ? item.product : item;
             const itemId = prod._id || prod.id || item._id;
             const itemPrice = Number(prod.price ?? item.price) || 0;
             const quantity = Number(item.quantity) || 1;
-
             return (
               <div
                 key={itemId || idx}
@@ -89,8 +84,6 @@ const CartPage = () => {
                     ${itemPrice.toFixed(2)}
                   </p>
                 </div>
-
-                {/* Quantity Controls */}
                 <div className="flex items-center gap-2 border border-gray-200 rounded-xl p-1 bg-gray-50">
                   <button
                     onClick={() => updateQuantity(itemId, quantity - 1)}
@@ -108,8 +101,6 @@ const CartPage = () => {
                     +
                   </button>
                 </div>
-
-                {/* Subtotal & Delete */}
                 <div className="text-right flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-24">
                   <span className="text-sm font-bold text-gray-900">
                     ${(itemPrice * quantity).toFixed(2)}
@@ -125,13 +116,10 @@ const CartPage = () => {
             );
           })}
         </div>
-
-        {/* Order Summary */}
         <div className="lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-5">
           <h2 className="text-base font-bold text-gray-900 pb-3 border-b border-gray-100">
             Order Summary
           </h2>
-
           <div className="space-y-3 text-xs">
             <div className="flex justify-between text-gray-600">
               <span>Subtotal</span>
@@ -151,13 +139,11 @@ const CartPage = () => {
                 )}
               </span>
             </div>
-
             <div className="pt-3 border-t border-gray-100 flex justify-between text-sm font-bold text-gray-900">
               <span>Total</span>
               <span>${Number(finalTotal).toFixed(2)}</span>
             </div>
           </div>
-
           <button
             onClick={() => navigate("/checkout")}
             className="w-full py-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow transition cursor-pointer"
@@ -169,5 +155,4 @@ const CartPage = () => {
     </div>
   );
 };
-
 export default CartPage;
