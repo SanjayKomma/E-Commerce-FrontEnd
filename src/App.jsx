@@ -10,6 +10,7 @@ import ProductPage from "./components/products/ProductCard";
 import { CartProvider } from "./context/CartContext";
 import CartPage from "./views/cart/CartPage";
 import ProductDetailPage from "./views/products/ProductDetailPage";
+import CheckoutPage from "./views/checkout/CheckoutPage";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "products/:id",
         element:<ProductDetailPage />
+      },
+      {
+        path: "/checkout",
+        element: <CheckoutPage />,
       }
     ],
   },

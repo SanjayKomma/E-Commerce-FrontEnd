@@ -1,8 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
-
+import { useNavigate } from "react-router-dom";
 const CartPage = () => {
+  const navigate = useNavigate();
   const {
     cart = [],
     updateQuantity,
@@ -158,7 +159,7 @@ const CartPage = () => {
           </div>
 
           <button
-            onClick={() => alert("Proceeding to checkout...")}
+            onClick={() => navigate("/checkout")}
             className="w-full py-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow transition cursor-pointer"
           >
             Proceed to Checkout
