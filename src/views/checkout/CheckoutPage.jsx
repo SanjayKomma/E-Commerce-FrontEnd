@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
 import orderService from "../../services/orderService";
 
 const CheckoutPage = () => {
+  const { user } = useAuth();
   const { cart, subtotal, tax, shipping, finalTotal } = useCart();
   const navigate = useNavigate();
 
-  // Match the exact schema keys (street, ZipCode)
   const [shippingAddress, setShippingAddress] = useState({
     street: "",
     city: "",
@@ -18,6 +19,27 @@ const CheckoutPage = () => {
   const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Pre-populate default address from user profile
+  useEffect(() => {
+    if (!user) return;
+
+    let defaultAddr = null;
+    if (Array.isArray(user.address) && user.address.length > 0) {
+      defaultAddr = user.address.find((addr) => addr.isDefault) || user.address[0];
+    } else if (user.address && typeof user.address === "object") {
+      defaultAddr = user.address;
+    }
+
+    if (defaultAddr) {
+      setShippingAddress({
+        street: defaultAddr.street || "",
+        city: defaultAddr.city || "",
+        ZipCode: defaultAddr.ZipCode || defaultAddr.zipCode || "",
+        country: defaultAddr.country?.trim() || "India",
+      });
+    }
+  }, [user]);
 
   const handleInputChange = (e) => {
     setShippingAddress({
@@ -51,7 +73,7 @@ const CheckoutPage = () => {
 
       const orderData = {
         items,
-        orderItems: items, // included in case backend checks either
+        orderItems: items,
         shippingAddress: {
           street: shippingAddress.street,
           city: shippingAddress.city,
@@ -108,7 +130,7 @@ const CheckoutPage = () => {
       )}
 
       <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Shipping & Payment Options */}
+        {/* Shipping & Payment */}
         <div className="lg:col-span-7 space-y-6">
           <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-4">
             <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider">
@@ -209,7 +231,7 @@ const CheckoutPage = () => {
           </div>
         </div>
 
-        {/* Order Summary Column */}
+        {/* Order Summary */}
         <div className="lg:col-span-5">
           <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-6 sticky top-6">
             <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider pb-3 border-b border-gray-100">

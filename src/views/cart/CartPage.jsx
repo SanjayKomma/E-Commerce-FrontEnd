@@ -72,7 +72,6 @@ const CartPage = () => {
                   alt={prod.name || "Product"}
                   className="w-20 h-20 rounded-xl object-cover border border-gray-100 flex-shrink-0"
                 />
-
                 <div className="flex-1 text-center sm:text-left">
                   <h3 className="text-sm font-bold text-gray-900 line-clamp-1">
                     {prod.name || "Product Item"}

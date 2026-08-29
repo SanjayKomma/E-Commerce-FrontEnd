@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import orderService from "../../../services/orderService.js";
+import orderService from "../../services/orderService";
 
 const OrderDetailPage = () => {
   const { id } = useParams();
@@ -60,7 +60,7 @@ const OrderDetailPage = () => {
   const items = order.items || order.orderItems || [];
   const address = order.shippingAddress || {};
 
-  // Compute Subtotal directly from items in DB
+  // Calculate items subtotal
   const itemsSubtotal = items.reduce((sum, item) => {
     const price = Number(item.price ?? item.product?.price ?? 0);
     const qty = Number(item.quantity) || 1;
@@ -77,9 +77,15 @@ const OrderDetailPage = () => {
       <div className="p-6 bg-emerald-50 rounded-3xl border border-emerald-100 text-center space-y-2">
         <span className="text-3xl">🎉</span>
         <h1 className="text-xl font-bold text-emerald-950">Order Placed Successfully!</h1>
-        <p className="text-xs text-emerald-800">
-          Order ID: <strong className="font-mono">{order._id || id}</strong>
-        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3 text-xs pt-1">
+          <span className="text-emerald-800">
+            Order ID: <strong className="font-mono">{order._id || id}</strong>
+          </span>
+          <span className="text-emerald-300">•</span>
+          <span className="px-2.5 py-0.5 font-bold rounded-full bg-amber-100 text-amber-800 uppercase tracking-wide text-[10px]">
+            Order Status: {order.status || "Pending"}
+          </span>
+        </div>
       </div>
 
       {/* Overview Grid */}
@@ -90,16 +96,11 @@ const OrderDetailPage = () => {
             Shipping Address
           </h3>
           <p className="text-xs text-gray-700 leading-relaxed font-medium">
-            {address.street || address.address || "123 Street"}<br />
+            {address.street || address.address || "Street address not provided"}<br />
             {address.city ? `${address.city}, ` : ""}
             {address.ZipCode || address.postalCode || ""}<br />
             {address.country || "India"}
           </p>
-          <div className="pt-2">
-            <span className="inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800 capitalize">
-              {order.status || "pending"}
-            </span>
-          </div>
         </div>
 
         {/* Payment Summary */}
@@ -111,8 +112,14 @@ const OrderDetailPage = () => {
             Method: <strong className="text-gray-900">{order.paymentMethod || "Cash on Delivery"}</strong>
           </p>
           <div className="pt-2">
-            <span className="inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-blue-100 text-blue-800">
-              Pending Payment
+            <span
+              className={`inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-full ${
+                order.isPaid
+                  ? "bg-emerald-100 text-emerald-800"
+                  : "bg-blue-100 text-blue-800"
+              }`}
+            >
+              {order.isPaid ? "Paid" : "Pending Payment"}
             </span>
           </div>
         </div>
@@ -172,6 +179,7 @@ const OrderDetailPage = () => {
         </div>
       </div>
 
+      {/* Back to Home CTA */}
       <div className="text-center pt-2">
         <Link
           to="/"

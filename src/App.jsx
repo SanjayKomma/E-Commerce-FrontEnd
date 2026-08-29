@@ -11,7 +11,8 @@ import { CartProvider } from "./context/CartContext";
 import CartPage from "./views/cart/CartPage";
 import ProductDetailPage from "./views/products/ProductDetailPage";
 import CheckoutPage from "./views/checkout/CheckoutPage";
-import OrderDetailPage from "./components/products/orders/OrderDetailPage";
+import OrderDetailPage from "./components/orders/OrderDetailPage";
+import MyOrdersPage from "./components/orders/MyOrdersPage";
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
       {
         path: "orders/:id",
         element: <OrderDetailPage />,
+      },
+      {
+        path: "orders",
+        element: <MyOrdersPage />,
       }
     ],
   },
