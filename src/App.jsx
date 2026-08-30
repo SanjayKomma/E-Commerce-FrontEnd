@@ -13,6 +13,7 @@ import ProductDetailPage from "./views/products/ProductDetailPage";
 import CheckoutPage from "./views/checkout/CheckoutPage";
 import OrderDetailPage from "./components/orders/OrderDetailPage";
 import MyOrdersPage from "./components/orders/MyOrdersPage";
+import ManageProductsPage from "./views/dashboard/ManageProductsPage";
 
 const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       {
         path: "orders",
         element: <MyOrdersPage />,
+      },
+      {
+        path: "dashboard/products",
+        element:<ProtectedRoute allowedRoles={["admin", "seller"]}><ManageProductsPage /></ProtectedRoute>,
       }
     ],
   },
