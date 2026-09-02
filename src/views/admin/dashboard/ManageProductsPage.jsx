@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import productService from "../../services/productService";
+import { useAuth } from "../../../context/AuthContext";
+import productService from "../../../services/productService";
 import ProductModal from "./ProductModal";
 import ManageUsersTab from "./ManageUsersTab";
 

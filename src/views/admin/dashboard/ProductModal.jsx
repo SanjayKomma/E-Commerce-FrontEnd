@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import productService from "../../services/productService";
+import productService from "../../../services/productService";
 
 const ProductModal = ({ isOpen, onClose, productToEdit, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -51,7 +51,7 @@ const ProductModal = ({ isOpen, onClose, productToEdit, onSuccess }) => {
       const payload = {
         ...formData,
         price: Number(formData.price),
-        stock: Number(formData.stock),
+        stock: formData.stock !== "" && !isNaN(formData.stock) ? parseInt(formData.stock, 10) : 0,
       };
 
       if (productToEdit) {

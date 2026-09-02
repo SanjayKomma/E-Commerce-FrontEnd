@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import userService from "../../services/userService";
-import { useAuth } from "../../context/AuthContext";
+import userService from "../../../services/userService";
+import { useAuth } from "../../../context/AuthContext";
 
 const ManageUsersTab = () => {
   const { user: currentAdmin } = useAuth();
