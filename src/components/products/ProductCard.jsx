@@ -1,14 +1,52 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useWishlist } from "../../context/WishlistContext";
 
 const ProductCard = ({ product, onAddToCart }) => {
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const productId = product._id || product.id;
+
+  // 1. Determine if this product is in the wishlist
+  const wishlisted = isWishlisted(productId);
+
+  // 2. Click handler to prevent card link navigation and toggle state
+  const handleWishlistClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(productId);
+  };
+
   const price = Number(product.price) || 0;
   const rating = Number(product.rating) || 0;
 
   return (
     <div className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden">
       <div className="relative aspect-square w-full bg-gray-50 overflow-hidden">
-        <Link to={`/products/${product._id || product.id}`}>
+        {/* Heart Wishlist Button */}
+        <button
+          onClick={handleWishlistClick}
+          aria-label="Toggle Wishlist"
+          className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/90 backdrop-blur-md border border-gray-100 flex items-center justify-center shadow hover:scale-110 active:scale-95 transition cursor-pointer"
+        >
+          <svg
+            className={`w-4 h-4 transition ${
+              wishlisted
+                ? "fill-rose-500 text-rose-500"
+                : "fill-none text-gray-400 hover:text-rose-500"
+            }`}
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+            />
+          </svg>
+        </button>
+
+        <Link to={`/products/${productId}`}>
           <img
             src={product.image || "https://placehold.co/600x600?text=Product"}
             alt={product.name}
@@ -16,6 +54,7 @@ const ProductCard = ({ product, onAddToCart }) => {
             loading="lazy"
           />
         </Link>
+
         {/* Category Chip */}
         {product.category && (
           <span className="absolute top-3 left-3 bg-white/95 backdrop-blur-md text-[11px] font-semibold tracking-wide text-gray-700 px-3 py-1 rounded-full shadow-sm">
@@ -23,9 +62,9 @@ const ProductCard = ({ product, onAddToCart }) => {
           </span>
         )}
 
-        {/* Out of Stock Pill */}
+        {/* Out of Stock Pill (Positioned bottom-left so it doesn't overlap the heart button) */}
         {product.stock === 0 && (
-          <span className="absolute top-3 right-3 bg-red-500/90 text-white text-[11px] font-semibold px-2.5 py-1 rounded-full">
+          <span className="absolute bottom-3 left-3 bg-red-500/90 text-white text-[11px] font-semibold px-2.5 py-1 rounded-full shadow-sm">
             Out of Stock
           </span>
         )}
@@ -34,7 +73,6 @@ const ProductCard = ({ product, onAddToCart }) => {
       {/* 2. Card Content */}
       <div className="p-5 flex flex-col flex-1 justify-between">
         <div className="space-y-2">
-          
           {/* Star Rating & Review Count */}
           <div className="flex items-center gap-1">
             <div className="flex text-amber-400">
@@ -57,9 +95,7 @@ const ProductCard = ({ product, onAddToCart }) => {
 
           {/* Title */}
           <h3 className="text-sm font-bold text-gray-900 line-clamp-1 group-hover:text-indigo-600 transition">
-            <Link to={`/products/${product._id || product.id}`}>
-              {product.name}
-            </Link>
+            <Link to={`/products/${productId}`}>{product.name}</Link>
           </h3>
 
           {/* Description */}
@@ -91,7 +127,6 @@ const ProductCard = ({ product, onAddToCart }) => {
             Add to Cart
           </button>
         </div>
-
       </div>
     </div>
   );

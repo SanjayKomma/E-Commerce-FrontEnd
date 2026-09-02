@@ -2,15 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import productService from "../../services/productService";
 import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
-
+  const { toggleWishlist, isWishlisted } = useWishlist();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [addedMessage, setAddedMessage] = useState(false);
+  const wishlisted = isWishlisted(product?._id);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -184,6 +186,30 @@ const ProductDetailPage = () => {
                 className="flex-1 py-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 rounded-xl shadow transition cursor-pointer"
               >
                 Add {quantity > 1 ? `(${quantity})` : ""} to Cart
+              </button>
+              <button
+                onClick={() => toggleWishlist(product._id)}
+                className={`p-3 rounded-2xl border transition flex items-center gap-2 text-xs font-bold ${
+                  wishlisted
+                    ? "bg-rose-50 border-rose-200 text-rose-600"
+                    : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <svg
+                  className={`w-5 h-5 ${
+                    wishlisted ? "fill-rose-500 text-rose-500" : "fill-none text-gray-500"
+                  }`}
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+                <span>{wishlisted ? "Saved" : "Save to Wishlist"}</span>
               </button>
             </div>
 

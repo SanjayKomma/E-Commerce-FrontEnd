@@ -14,6 +14,8 @@ import CheckoutPage from "./views/checkout/CheckoutPage";
 import OrderDetailPage from "./components/orders/OrderDetailPage";
 import MyOrdersPage from "./components/orders/MyOrdersPage";
 import ManageProductsPage from "./views/dashboard/ManageProductsPage";
+import { WishlistProvider } from "./context/WishlistContext";
+import WishlistPage from "./views/wishlist/WishlistPage";
 
 const router = createBrowserRouter([
   {
@@ -63,6 +65,10 @@ const router = createBrowserRouter([
       {
         path: "dashboard/products",
         element:<ProtectedRoute allowedRoles={["admin", "seller"]}><ManageProductsPage /></ProtectedRoute>,
+      },
+      {
+        path: "wishlist",
+        element: <WishlistPage />,
       }
     ],
   },
@@ -71,9 +77,11 @@ const router = createBrowserRouter([
 const App = () => {
   return (
     <AuthProvider>
-      <CartProvider>
-        <RouterProvider router={router} />
-      </CartProvider>
+      <WishlistProvider>
+        <CartProvider>
+          <RouterProvider router={router} />
+        </CartProvider>
+      </WishlistProvider>
     </AuthProvider>
   );
 };
