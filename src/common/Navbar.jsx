@@ -54,16 +54,6 @@ const Navbar = () => {
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-gray-600">
-              <Link to="/" className="hover:text-indigo-600 transition">
-                All Products
-              </Link>
-              {user && (
-                <Link to="/my-orders" className="hover:text-indigo-600 transition">
-                  My Orders
-                </Link>
-              )}
-            </nav>
           </div>
 
           {/* Right-Side Actions */}
@@ -145,7 +135,7 @@ const Navbar = () => {
                     )}
 
                     <Link
-                      to="/my-orders"
+                      to="/orders"
                       onClick={() => setDropdownOpen(false)}
                       className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition"
                     >
