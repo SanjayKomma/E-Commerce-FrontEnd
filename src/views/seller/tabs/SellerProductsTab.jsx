@@ -131,7 +131,7 @@ const SellerProductsTab = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 font-medium text-gray-600">{product.category}</td>
-                    <td className="px-6 py-4 font-bold text-gray-900">${Number(product.price).toFixed(2)}</td>
+                    <td className="px-6 py-4 font-bold text-gray-900">₹{Number(product.price).toFixed(2)}</td>
                     <td className="px-6 py-4">
                       <span
                         className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] ${

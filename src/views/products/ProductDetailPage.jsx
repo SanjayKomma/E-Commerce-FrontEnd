@@ -135,7 +135,7 @@ const ProductDetailPage = () => {
             {/* Price */}
             <div className="pt-2">
               <span className="text-3xl font-extrabold text-indigo-600">
-                ${Number(product.price || 0).toFixed(2)}
+                ₹{Number(product.price || 0).toFixed(2)}
               </span>
             </div>
 

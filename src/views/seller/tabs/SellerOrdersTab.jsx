@@ -114,7 +114,7 @@ const SellerOrdersTab = () => {
             <div className="text-left sm:text-right">
               <span className="text-[10px] text-gray-400 uppercase font-semibold block">Your Subtotal</span>
               <span className="text-sm font-black text-gray-900">
-                ${(order.sellerTotal || 0).toFixed(2)}
+                ₹{(order.sellerTotal || 0).toFixed(2)}
               </span>
             </div>
           </div>

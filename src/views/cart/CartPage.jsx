@@ -102,7 +102,7 @@ const CartPage = () => {
                 </div>
                 <div className="text-right flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-24">
                   <span className="text-sm font-bold text-gray-900">
-                    ${(itemPrice * quantity).toFixed(2)}
+                    ₹{(itemPrice * quantity).toFixed(2)}
                   </span>
                   <button
                     onClick={() => removeFromCart(itemId)}
@@ -122,11 +122,11 @@ const CartPage = () => {
           <div className="space-y-3 text-xs">
             <div className="flex justify-between text-gray-600">
               <span>Subtotal</span>
-              <span className="font-semibold text-gray-900">${Number(subtotal).toFixed(2)}</span>
+              <span className="font-semibold text-gray-900">₹{Number(subtotal).toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-gray-600">
               <span>Estimated Tax (5%)</span>
-              <span className="font-semibold text-gray-900">${Number(tax).toFixed(2)}</span>
+              <span className="font-semibold text-gray-900">₹{Number(tax).toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-gray-600">
               <span>Shipping</span>
@@ -134,13 +134,13 @@ const CartPage = () => {
                 {shipping === 0 ? (
                   <span className="text-green-600 font-bold">FREE</span>
                 ) : (
-                  `$${Number(shipping).toFixed(2)}`
+                  `₹${Number(shipping).toFixed(2)}`
                 )}
               </span>
             </div>
             <div className="pt-3 border-t border-gray-100 flex justify-between text-sm font-bold text-gray-900">
               <span>Total</span>
-              <span>${Number(finalTotal).toFixed(2)}</span>
+              <span>₹{Number(finalTotal).toFixed(2)}</span>
             </div>
           </div>
           <button

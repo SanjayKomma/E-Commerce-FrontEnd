@@ -257,11 +257,11 @@ const CheckoutPage = () => {
                         {productObj.name || item.name}
                       </p>
                       <p className="text-[11px] text-gray-500">
-                        Qty: {itemQty} × ${itemPrice.toFixed(2)}
+                        Qty: {itemQty} × ₹{itemPrice.toFixed(2)}
                       </p>
                     </div>
                     <span className="text-xs font-bold text-gray-800">
-                      ${(itemPrice * itemQty).toFixed(2)}
+                      ₹{(itemPrice * itemQty).toFixed(2)}
                     </span>
                   </div>
                 );
@@ -276,16 +276,16 @@ const CheckoutPage = () => {
               <div className="flex justify-between">
                 <span>Shipping Fee</span>
                 <span className="font-semibold text-gray-900">
-                  {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                  {shipping === 0 ? "FREE" : `₹${shipping.toFixed(2)}`}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Tax (5%)</span>
-                <span className="font-semibold text-gray-900">${tax.toFixed(2)}</span>
+                <span className="font-semibold text-gray-900">₹{tax.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm font-extrabold text-gray-900 pt-2 border-t border-gray-100">
                 <span>Total Amount</span>
-                <span className="text-indigo-600">${finalTotal.toFixed(2)}</span>
+                <span className="text-indigo-600">₹{finalTotal.toFixed(2)}</span>
               </div>
             </div>
 
@@ -294,7 +294,7 @@ const CheckoutPage = () => {
               disabled={loading}
               className="w-full py-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 rounded-xl shadow transition cursor-pointer"
             >
-              {loading ? "Placing Order..." : `Place Order • $${finalTotal.toFixed(2)}`}
+              {loading ? "Placing Order..." : `Place Order • ₹${finalTotal.toFixed(2)}`}
             </button>
           </div>
         </div>

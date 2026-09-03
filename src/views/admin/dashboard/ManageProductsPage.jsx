@@ -166,7 +166,7 @@ const ManageProductsPage = () => {
                             {product.category}
                           </td>
                           <td className="px-6 py-4 font-bold text-gray-900">
-                            ${Number(product.price).toFixed(2)}
+                            ₹{Number(product.price).toFixed(2)}
                           </td>
                           <td className="px-6 py-4">
                             <span

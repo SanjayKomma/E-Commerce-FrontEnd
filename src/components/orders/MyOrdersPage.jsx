@@ -140,7 +140,7 @@ const MyOrdersPage = () => {
                   <div className="text-right flex-shrink-0">
                     <p className="text-[11px] text-gray-400">Total Amount</p>
                     <p className="text-base font-extrabold text-indigo-600">
-                      ${total.toFixed(2)}
+                      ₹{total.toFixed(2)}
                     </p>
                   </div>
                 </div>

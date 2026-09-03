@@ -83,7 +83,7 @@ const WishListPage = () => {
                     </h3>
                   </Link>
                   <p className="text-sm font-black text-gray-900 mt-2">
-                    ${Number(product.price).toFixed(2)}
+                    ₹{Number(product.price).toFixed(2)}
                   </p>
                 </div>
               </div>

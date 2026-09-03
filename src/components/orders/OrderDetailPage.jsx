@@ -130,7 +130,7 @@ const OrderDetailPage = () => {
             Total Amount
           </h3>
           <p className="text-2xl font-extrabold text-indigo-600">
-            ${finalOrderTotal.toFixed(2)}
+            ₹{finalOrderTotal.toFixed(2)}
           </p>
           <p className="text-[11px] text-gray-400">
             Placed on: {new Date(order.createdAt || Date.now()).toLocaleDateString()}
@@ -171,7 +171,7 @@ const OrderDetailPage = () => {
                 </div>
 
                 <span className="text-xs font-bold text-gray-900">
-                  ${(price * quantity).toFixed(2)}
+                  ₹{(price * quantity).toFixed(2)}
                 </span>
               </div>
             );

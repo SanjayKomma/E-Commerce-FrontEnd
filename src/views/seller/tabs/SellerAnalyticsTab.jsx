@@ -119,7 +119,7 @@ const SellerAnalyticsTab = () => {
             Total Revenue
           </span>
           <p className="text-2xl font-black text-gray-900 mt-1">
-            ${analytics.totalRevenue.toFixed(2)}
+            ₹{analytics.totalRevenue.toFixed(2)}
           </p>
           <span className="text-[10px] text-emerald-600 font-semibold mt-1 inline-block">
             ● Lifetime sales
@@ -197,7 +197,7 @@ const SellerAnalyticsTab = () => {
                       {item.name}
                     </td>
                     <td className="px-6 py-4 font-semibold text-gray-600">
-                      ${item.price.toFixed(2)}
+                      ₹{item.price.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 font-bold text-indigo-600">
                       {item.unitsSold}
@@ -214,7 +214,7 @@ const SellerAnalyticsTab = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 font-black text-gray-900 text-right">
-                      ${item.revenue.toFixed(2)}
+                      ₹{item.revenue.toFixed(2)}
                     </td>
                   </tr>
                 ))}
