@@ -42,16 +42,16 @@ const SellerStoreTab = () => {
       const res = await authService.updateProfile(formData);
       
       // Check where your API returns the updated user document:
-      const updatedUser = res.user || res.data?.user || res.data || res;
-
+      const updatedUser = res.user || res.data?.user || res;
+      console.log("Extracted updatedUser:", updatedUser);
       if (updatedUser) {
         // 1. Update React Auth Context state
         if (typeof setUser === "function") {
-          setUser(updatedUser);
+          setUser((prev)=>({...prev,...updatedUser}));
         }
-        
+        const existingUser = JSON.parse(localStorage.getItem("user")||"{}");
         // 2. Persist to localStorage so page refreshes retain it
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        localStorage.setItem("user", JSON.stringify({...existingUser,...updatedUser}));
       }
 
       setMessage({ text: "Store settings updated successfully!", type: "success" });

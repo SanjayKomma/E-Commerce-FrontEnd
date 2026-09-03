@@ -160,18 +160,27 @@ const SellerOrdersTab = () => {
 
                   {/* Actions & Status Controls */}
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleTrackingSave(order._id, item.product?._id, item.trackingNumber)}
-                      className="px-2.5 py-1.5 text-[11px] font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition cursor-pointer"
-                    >
-                      {item.trackingNumber ? "Edit Tracking" : "+ Add Tracking"}
-                    </button>
-
+                    {item.itemStatus === "Delivered" ? (
+                      <span className="px-2.5 py-1.5 text-[11px] font-medium text-gray-500 bg-gray-50 border border-gray-200 rounded-xl">
+                        {item.trackingNumber ? `Tracking: ${item.trackingNumber}` : "No tracking"}
+                      </span>
+                      ) : (
+                        <button
+                          onClick={() => handleTrackingSave(order._id, item.product?._id, item.trackingNumber)}
+                          className="px-2.5 py-1.5 text-[11px] font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl cursor-pointer"
+                        >
+                          {item.trackingNumber ? "Edit Tracking" : "+ Add Tracking"}
+                        </button>
+                      )}
                     <select
-                      disabled={isUpdating}
                       value={item.itemStatus || "Processing"}
+                      disabled={item.itemStatus === "Delivered" || isUpdating}
                       onChange={(e) => handleStatusChange(order._id, item.product?._id, e.target.value)}
-                      className="text-xs font-bold px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-gray-800 focus:ring-2 focus:ring-indigo-500 cursor-pointer disabled:opacity-50"
+                      className={`text-xs font-semibold px-2.5 py-1 rounded-lg border transition ${
+                        item.itemStatus === "Delivered"
+                          ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                          : "bg-white text-gray-800 border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                      }`}
                     >
                       <option value="Processing">Processing</option>
                       <option value="Shipped">Shipped</option>
