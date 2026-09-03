@@ -32,6 +32,11 @@ const ProductDetailPage = () => {
 
   const handleAddToCart = () => {
     if (!product) return;
+    if (!user) {
+    // Redirect to login and remember where they came from
+      navigate("/login", { state: { from: location.pathname } });
+      return;
+    }
     addToCart(product, quantity);
     setAddedMessage(true);
     setTimeout(() => setAddedMessage(false), 2000);

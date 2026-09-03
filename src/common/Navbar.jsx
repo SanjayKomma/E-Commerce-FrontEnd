@@ -7,6 +7,7 @@ import { useWishlist } from "../context/WishlistContext";
 const Navbar = () => {
   const { user, logout } = useAuth();
   const { cart } = useCart();
+  const {totalItems} = useCart(); 
   const { wishlist } = useWishlist();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -83,9 +84,9 @@ const Navbar = () => {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm animate-scale">
-                  {cartItemCount > 99 ? "99+" : cartItemCount}
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                  {totalItems > 99 ? "99+" : totalItems}
                 </span>
               )}
             </Link>
