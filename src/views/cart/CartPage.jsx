@@ -1,9 +1,16 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { loadRazorpayScript } from "../../utils/loadRazorpay";
+import api from "../../services/api";
+import { toast } from "react-hot-toast";
+
 const CartPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+
   const {
     cart = [],
     updateQuantity,
@@ -13,6 +20,99 @@ const CartPage = () => {
     shipping = 0,
     finalTotal = 0,
   } = useCart();
+
+  const handleCheckout = async () => {
+    if (!user) {
+      toast.error("Please log in to proceed with checkout");
+      navigate("/login");
+      return;
+    }
+
+    if (!cart || cart.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    setLoading(true);
+
+    // 1. Load Razorpay script dynamically
+    const isLoaded = await loadRazorpayScript();
+    if (!isLoaded) {
+      toast.error("Failed to load Razorpay SDK. Check your internet connection.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // 2. Create order on backend (returns Razorpay order id)
+      const { data } = await api.post("/payments/create-order", {
+        amount: finalTotal,
+      });
+
+      if (!data.success || !data.order) {
+        throw new Error("Unable to create order. Please try again.");
+      }
+
+      const razorpayOrder = data.order;
+
+      // 3. Configure Razorpay checkout options
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: razorpayOrder.amount, // Amount in paise
+        currency: razorpayOrder.currency,
+        name: "ShopVerse",
+        description: "Cart Order Payment",
+        order_id: razorpayOrder.id,
+        handler: async (response) => {
+          try {
+            // 4. Send signature to backend to verify and store in MongoDB
+            const verifyPayload = {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              items: cart,
+              shippingAddress: {
+                street: user.address?.street || "Standard Delivery",
+                city: user.address?.city || "Visakhapatnam",
+                ZipCode: user.address?.ZipCode || "530001",
+                country: "India",
+              },
+              totalAmount: finalTotal,
+            };
+
+            const verifyRes = await api.post("/payments/verify", verifyPayload);
+
+            if (verifyRes.data.success) {
+              toast.success("Payment successful! Your order has been placed.");
+              navigate("/orders");
+            }
+          } catch (verifyError) {
+            console.error("Verification error:", verifyError);
+            toast.error(
+              verifyError.response?.data?.message || "Payment verification failed"
+            );
+          }
+        },
+        prefill: {
+          name: user?.name || "",
+          email: user?.email || "",
+          contact: user?.phone || "9999999999",
+        },
+        theme: {
+          color: "#4f46e5",
+        },
+      };
+
+      // 5. Open popup
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (err) {
+      console.error("Checkout failed:", err);
+      toast.error(err.response?.data?.message || "Failed to start payment process");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!cart || cart.length === 0) {
     return (
@@ -47,6 +147,7 @@ const CartPage = () => {
       </div>
     );
   }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
@@ -80,7 +181,7 @@ const CartPage = () => {
                     {prod.category || "General"}
                   </p>
                   <p className="text-sm font-bold text-indigo-600 mt-2">
-                    ${itemPrice.toFixed(2)}
+                    ₹{itemPrice.toFixed(2)}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 border border-gray-200 rounded-xl p-1 bg-gray-50">
@@ -144,14 +245,16 @@ const CartPage = () => {
             </div>
           </div>
           <button
-            onClick={() => navigate("/checkout")}
-            className="w-full py-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow transition cursor-pointer"
+            onClick={handleCheckout}
+            disabled={loading}
+            className="w-full py-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-xl shadow transition cursor-pointer"
           >
-            Proceed to Checkout
+            {loading ? "Preparing Checkout..." : `Pay ₹${Number(finalTotal).toFixed(2)} with Razorpay`}
           </button>
         </div>
       </div>
     </div>
   );
 };
+
 export default CartPage;
