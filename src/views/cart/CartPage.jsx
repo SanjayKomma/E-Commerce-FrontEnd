@@ -13,6 +13,7 @@ const CartPage = () => {
 
   const {
     cart = [],
+    loading: isCartLoading = false, // Destructured loading state to prevent flash
     updateQuantity,
     removeFromCart,
     subtotal = 0,
@@ -35,7 +36,6 @@ const CartPage = () => {
 
     setLoading(true);
 
-    // 1. Load Razorpay script dynamically
     const isLoaded = await loadRazorpayScript();
     if (!isLoaded) {
       toast.error("Failed to load Razorpay SDK. Check your internet connection.");
@@ -44,8 +44,7 @@ const CartPage = () => {
     }
 
     try {
-      // 2. Create order on backend (returns Razorpay order id)
-      const { data } = await api.post("/payments/create-order", {
+      const { data } = await api.post("/payment/create-order", {
         amount: finalTotal,
       });
 
@@ -55,17 +54,15 @@ const CartPage = () => {
 
       const razorpayOrder = data.order;
 
-      // 3. Configure Razorpay checkout options
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: razorpayOrder.amount, // Amount in paise
+        amount: razorpayOrder.amount,
         currency: razorpayOrder.currency,
         name: "ShopVerse",
         description: "Cart Order Payment",
         order_id: razorpayOrder.id,
         handler: async (response) => {
           try {
-            // 4. Send signature to backend to verify and store in MongoDB
             const verifyPayload = {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -80,7 +77,7 @@ const CartPage = () => {
               totalAmount: finalTotal,
             };
 
-            const verifyRes = await api.post("/payments/verify", verifyPayload);
+            const verifyRes = await api.post("/payment/verify", verifyPayload);
 
             if (verifyRes.data.success) {
               toast.success("Payment successful! Your order has been placed.");
@@ -103,7 +100,6 @@ const CartPage = () => {
         },
       };
 
-      // 5. Open popup
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (err) {
@@ -114,6 +110,17 @@ const CartPage = () => {
     }
   };
 
+  // 1. Show skeleton/loader while cart data is fetching on page load/refresh
+  if (isCartLoading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+        <div className="inline-block animate-spin rounded-full h-9 w-9 border-4 border-indigo-600 border-t-transparent"></div>
+        <p className="text-xs text-gray-500 mt-4 font-medium">Loading your shopping cart...</p>
+      </div>
+    );
+  }
+
+  // 2. Only show empty state once fetching is complete and cart has zero items
   if (!cart || cart.length === 0) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center">
