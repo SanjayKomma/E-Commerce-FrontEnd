@@ -29,6 +29,10 @@
 
 ---
 
+##Testing user accounts
+
+seller - email : sanjeev@gmail.com , password : 12345
+
 ## 3. Directory Architecture
 
 ```text
